@@ -46,7 +46,7 @@ contract ControlledAccounts is Ownable, EIP712 {
 		bytes32 messageHash = _hashTypedDataV4(
 			keccak256(
 				abi.encode(
-					keccak256("Account(address accountType,bytes value)"),
+					keccak256("Account(uint8 accountType,bytes value)"),
 					_account.accountType,
 					keccak256(_account.value)
 				)
