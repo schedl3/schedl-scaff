@@ -4919,15 +4919,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/express-session@npm:^1.17.7":
-  version: 1.17.7
-  resolution: "@types/express-session@npm:1.17.7"
-  dependencies:
-    "@types/express": "*"
-  checksum: 4764eafaf4e26842e891e83fa9fee30b92cc3724d91987aac3a658322f9a69fb544dae24fc3aba6e15fe9575ed862760ebecd7ff97a947afb695284967434a65
-  languageName: node
-  linkType: hard
-
 "@types/express@npm:*, @types/express@npm:4.17.17":
   version: 4.17.17
   resolution: "@types/express@npm:4.17.17"
@@ -7549,7 +7540,6 @@ __metadata:
     "@nestjs/schematics": 10.0.1
     "@nestjs/testing": 10.0.3
     "@types/express": 4.17.17
-    "@types/express-session": ^1.17.7
     "@types/jest": 29.5.3
     "@types/node": 20.3.3
     "@types/passport-jwt": ^3.0.9
