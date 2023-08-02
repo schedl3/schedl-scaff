@@ -23,12 +23,15 @@ const JwtProvider: React.FC<JwtProviderProps> = ({ children }) => {
   const [jwt, setJwt] = useState<string | null>(null);
 
   useEffect(() => {
-    // const tokenFromStorage = localStorage.getItem('jwt');
-    // setJwt(tokenFromStorage);
+    const tokenFromStorage = localStorage.getItem("jwt");
+    if (!tokenFromStorage) {
+      return;
+    }
+    setJwt(tokenFromStorage);
   }, []);
 
   useEffect(() => {
-    // localStorage.setItem('jwt', jwt || '');
+    localStorage.setItem("jwt", jwt || "");
   }, [jwt]);
 
   const value: JwtContextValue = {
