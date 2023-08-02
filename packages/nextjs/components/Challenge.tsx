@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import axios from "axios";
 import { useAccount, useSignMessage } from "wagmi";
+import { useJwtContext } from "~~/contexts/JwtContext";
 
 const BACKEND_URL = "https://localhost:3000";
 
@@ -8,7 +9,7 @@ export const Challenge = () => {
   const [challenge, setChallenge] = useState("");
   const [message, setMessage] = useState("gm wagmi frens");
   const [signature, setSignature] = useState("");
-  const [jwt, setJwt] = useState("");
+  const { jwt, setJwt } = useJwtContext();
   const [error, setError] = useState("");
   const account = useAccount();
   const { /* data, isError, isLoading, isSuccess, */ signMessage } = useSignMessage({
