@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useJwtContext } from "../contexts/JwtContext";
 import { Username } from "./Username";
+import { XmtpAddress } from "./XmtpAddress";
 import axios from "axios";
 
 const BACKEND_URL = "https://localhost:3000";
@@ -43,6 +44,7 @@ export const Me: React.FC = () => {
       <h2>Profile Information</h2>
       <Username username={profile.username} />
       <p>assistantXmtpAddress: {profile.assistantXmtpAddress}</p>
+      <XmtpAddress xmtpAddress={profile.assistantXmtpAddress} />
       <p>ethereumAddress: {profile.ethereumAddress}</p>
       <p>idAddress: {profile.idAddress}</p>
       <p>schedule: {JSON.stringify(profile.schedule)}</p>
