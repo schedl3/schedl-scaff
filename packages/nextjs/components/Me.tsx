@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useJwtContext } from "../contexts/JwtContext";
+import { Username } from "./Username";
 import axios from "axios";
 
 const BACKEND_URL = "https://localhost:3000";
@@ -18,9 +19,7 @@ export const Me: React.FC = () => {
 
   useEffect(() => {
     if (jwt) {
-      // Make the API request to the profile API
       axios
-        // .get(BACKEND_URL + '/profile', {
         .get(BACKEND_URL + "/profile/schedule", {
           headers: {
             Authorization: `Bearer ${jwt}`,
@@ -42,7 +41,7 @@ export const Me: React.FC = () => {
   return (
     <div>
       <h2>Profile Information</h2>
-      <p>Username: {profile.username}</p>
+      <Username username={profile.username} />
       <p>assistantXmtpAddress: {profile.assistantXmtpAddress}</p>
       <p>ethereumAddress: {profile.ethereumAddress}</p>
       <p>idAddress: {profile.idAddress}</p>
