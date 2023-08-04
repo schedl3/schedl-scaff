@@ -47,7 +47,6 @@ export const Me: React.FC = () => {
       <p>assistantXmtpAddress: {profile.assistantXmtpAddress}</p>
       <XmtpAddress xmtpAddress={profile.assistantXmtpAddress} />
       <p>twitterUsername: {profile.twitterUsername}</p>
-      <p>ethereumAddress: {profile.ethereumAddress}</p>
       <p>idAddress: {profile.idAddress}</p>
       <p>schedule: {JSON.stringify(profile.schedule)}</p>
     </div>
