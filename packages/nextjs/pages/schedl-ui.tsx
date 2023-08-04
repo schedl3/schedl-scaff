@@ -2,6 +2,8 @@ import type { NextPage } from "next";
 import { Challenge } from "~~/components/Challenge";
 import { Me } from "~~/components/Me";
 import { MetaHeader } from "~~/components/MetaHeader";
+// import { Faucet } from "~~/components/scaffold-eth/Faucet";
+import { TwitterConnect } from "~~/components/TwitterConnect";
 
 const SchedlUI: NextPage = () => {
   return (
@@ -13,7 +15,9 @@ const SchedlUI: NextPage = () => {
       </MetaHeader>
       <div className="grid lg:grid-cols-2 flex-grow" data-theme="exampleUi">
         <Challenge />
+        <TwitterConnect />
         <Me />
+        {/* <Faucet /> */}
       </div>
     </>
   );
