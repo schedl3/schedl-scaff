@@ -1,9 +1,7 @@
 import React, { useState } from "react";
-import axios from "axios";
 import { useAccount, useSignMessage } from "wagmi";
 import { useJwtContext } from "~~/contexts/JwtContext";
-
-const BACKEND_URL = "https://localhost:3000";
+import { backendGetChallenge, backendSiwe } from "~~/utils/schedlBackendApi";
 
 export const Challenge = () => {
   const [challenge, setChallenge] = useState("");
@@ -22,29 +20,25 @@ export const Challenge = () => {
         return;
       } else if (data) {
         setSignature(data);
-        const response = await axios.post(
-          BACKEND_URL + "/auth/ethloginjwt",
-          {
-            message,
-            signature: data,
-            // signature,
-          },
-          { withCredentials: true },
-        );
-        console.log("Signature posted:", response.data);
-        setJwt(response.data.access_token);
+        backendSiwe(message, signature, (data: any) => {
+          // console.log(data);
+          setJwt(data.access_token);
+        });
       }
     },
   });
 
   const handleChallengeClick = async () => {
     try {
-      const response = await axios.get(BACKEND_URL + "/challenge", { withCredentials: true });
+      if (!account.address) {
+        throw new Error("No account address");
+      }
+      const response = await backendGetChallenge();
       const { nonce } = response.data; // TODO verify nonce
       const URI = "https://localhost:3000"; // XXX not web domain
       const domain = "localhost:3000"; // XXX not window.location.host
       setChallenge(nonce);
-      const template = (domain: string, nonce: string, address: string, date: string) =>
+      const template = (domain: string, nonce: string, address: string | undefined, date: string) =>
         `${domain} wants you to sign in with your Ethereum account:\n` +
         `${address}\n` +
         "\n" +
@@ -55,7 +49,7 @@ export const Challenge = () => {
         "Chain ID: 1\n" +
         `Nonce: ${nonce}\n` +
         `Issued At: ${date}`;
-      setMessage(template(domain, nonce, account.address!, new Date().toISOString()));
+      setMessage(template(domain, nonce, account.address, new Date().toISOString()));
       setSignature("");
       setError("");
     } catch (error) {

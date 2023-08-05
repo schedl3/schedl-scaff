@@ -1,10 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { useJwtContext } from "../contexts/JwtContext";
+import { TzSelector } from "./TzSelector";
 import { Username } from "./Username";
 import { XmtpAddress } from "./XmtpAddress";
-import axios from "axios";
-
-const BACKEND_URL = "https://localhost:3000";
+import { backendGetEnd, backendSet } from "~~/utils/schedlBackendApi";
 
 interface Profile {
   username: string;
@@ -12,28 +11,36 @@ interface Profile {
   ethereumAddress: string;
   twitterUsername: string;
   schedule: object;
+  tz: string;
+  bio: string;
   idAddress: string;
 }
 
 export const Me: React.FC = () => {
   const { jwt } = useJwtContext();
   const [profile, setProfile] = useState<Profile | null>(null);
+  const [bio, setBio] = useState<string>("loading...");
+
+  const handleBioChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setBio(event.target.value);
+  };
+
+  const handleSaveBio = () => {
+    jwt && backendSet(jwt, "bio", bio);
+  };
+  const [selectedTz, setSelectedTz] = useState<string>(Intl.DateTimeFormat().resolvedOptions().timeZone);
+
+  const handleTzChange = (newTz: string) => {
+    setSelectedTz(newTz);
+    jwt && backendSet(jwt, "tz", newTz);
+  };
 
   useEffect(() => {
     if (jwt) {
-      axios
-        .get(BACKEND_URL + "/profile/schedule", {
-          headers: {
-            Authorization: `Bearer ${jwt}`,
-          },
-        })
-        .then(response => {
-          console.log("response.data check w", response.data);
-          setProfile(response.data);
-        })
-        .catch(error => {
-          console.error("Error fetching profile:", error);
-        });
+      backendGetEnd(jwt, "/profile/schedule", data => {
+        setProfile(data);
+        setBio(data.bio);
+      });
     }
   }, [jwt]);
 
@@ -48,6 +55,11 @@ export const Me: React.FC = () => {
       <XmtpAddress xmtpAddress={profile.assistantXmtpAddress} />
       <p>twitterUsername: {profile.twitterUsername}</p>
       <p>idAddress: {profile.idAddress}</p>
+      <p>bio: {profile.bio}</p>
+      <textarea className="textarea" value={bio} onChange={handleBioChange} />
+      <button onClick={handleSaveBio}>Save</button>
+      <p>tz: {profile.tz}</p>
+      <TzSelector currentTz={selectedTz} onTzChange={handleTzChange} />
       <p>schedule: {JSON.stringify(profile.schedule)}</p>
     </div>
   );

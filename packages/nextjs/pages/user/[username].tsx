@@ -1,10 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/router";
-import axios from "axios";
 import type { NextPage } from "next";
 import { MetaHeader } from "~~/components/MetaHeader";
-
-const BACKEND_URL = "https://localhost:3000";
+import { backendGetEnd } from "~~/utils/schedlBackendApi";
 
 interface Schedule {
   Sun: string;
@@ -31,10 +29,11 @@ const UserProfile: React.FC<{ username: string | string[] | undefined }> = ({ us
   useEffect(() => {
     const fetchUserProfile = async () => {
       try {
-        const response = await axios.get(`${BACKEND_URL}/profile/${username}`);
-        const user: PartialUser = response.data;
-        setUser(user);
-        setLoading(false);
+        backendGetEnd(false, `/profile/${username}`, (data: any) => {
+          const user: PartialUser = data;
+          setUser(user);
+          setLoading(false);
+        });
       } catch (error) {
         console.error("Error fetching user profile:", error);
         setLoading(false);
