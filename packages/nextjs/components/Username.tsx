@@ -1,8 +1,6 @@
 import React, { useState } from "react";
 import { useJwtContext } from "../contexts/JwtContext";
-import axios from "axios";
-
-const BACKEND_URL = "https://localhost:3000";
+import { backendSet } from "~~/utils/schedlBackendApi";
 
 interface UsernameProps {
   username: string;
@@ -17,31 +15,20 @@ export const Username: React.FC<UsernameProps> = ({ username }) => {
   };
 
   const handleUsernameUpdate = () => {
-    if (jwt) {
-      axios
-        .post(
-          BACKEND_URL + "/setUsername",
-          { username: newUsername },
-          {
-            headers: {
-              Authorization: `Bearer ${jwt}`,
-            },
-          },
-        )
-        .then(response => {
-          console.log("Username updated successfully!", response.data);
-        })
-        .catch(error => {
-          console.error("Error updating username (Username can only be set if it is currently empty):", error);
-        });
-    }
+    jwt && backendSet(jwt, "username", newUsername);
   };
 
   return (
     <div>
       <label htmlFor="username">Username:</label>
-      <input type="text" id="username" value={newUsername} placeholder={username} onChange={handleUsernameChange} />
-      <button onClick={handleUsernameUpdate}>Update</button>
+      <input type="text" id="username" value={newUsername} disabled={username !== ""} onChange={handleUsernameChange} />
+      <button
+        onClick={handleUsernameUpdate}
+        disabled={username !== ""}
+        className={"btn " + username ? "btn-primary" : "btn-disabled"}
+      >
+        Update
+      </button>
     </div>
   );
 };
