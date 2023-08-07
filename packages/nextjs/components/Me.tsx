@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useJwtContext } from "../contexts/JwtContext";
+import { Schedule, ScheduleWeek } from "./ScheduleWeek";
 import { TzSelector } from "./TzSelector";
 import { Username } from "./Username";
 import { XmtpAddress } from "./XmtpAddress";
@@ -61,6 +62,7 @@ export const Me: React.FC = () => {
       <p>tz: {profile.tz}</p>
       <TzSelector currentTz={selectedTz} onTzChange={handleTzChange} />
       <p>schedule: {JSON.stringify(profile.schedule)}</p>
+      <ScheduleWeek schedule={profile.schedule as Schedule} />
     </div>
   );
 };

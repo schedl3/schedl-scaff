@@ -24,7 +24,7 @@ export const backendSiwe = (message: string, signature: string, cb?: (data: any)
     });
 };
 
-export const backendSet = (jwt: string, propName: string, val: string, cb?: (data: any) => void) => {
+export const backendSet = (jwt: string, propName: string, val: string | object, cb?: (data: any) => void) => {
   axios
     .post(
       BACKEND_URL + "/set" + capitalize(propName),
