@@ -2,8 +2,6 @@ import axios from "axios";
 
 const BACKEND_URL = "https://localhost:3000";
 
-const capitalize = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
-
 export const backendGetChallenge = async () => await axios.get(BACKEND_URL + "/challenge", { withCredentials: true });
 
 export const backendSiwe = (message: string, signature: string, cb?: (data: any) => void) => {
@@ -24,10 +22,10 @@ export const backendSiwe = (message: string, signature: string, cb?: (data: any)
     });
 };
 
-export const backendSet = (jwt: string, propName: string, val: string | object, cb?: (data: any) => void) => {
+export const backendSet = (jwt: string, propName: string, val: string | object | boolean, cb?: (data: any) => void) => {
   axios
-    .post(
-      BACKEND_URL + "/set" + capitalize(propName),
+    .patch(
+      BACKEND_URL + "/users/me/" + propName, // "/set" + capitalize(propName),
       { [propName]: val },
       {
         headers: { Authorization: `Bearer ${jwt}` },

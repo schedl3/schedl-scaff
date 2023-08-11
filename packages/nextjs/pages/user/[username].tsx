@@ -2,17 +2,8 @@ import React, { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import type { NextPage } from "next";
 import { MetaHeader } from "~~/components/MetaHeader";
+import { Schedule, ScheduleWeek } from "~~/components/ScheduleWeek";
 import { backendGetEnd } from "~~/utils/schedlBackendApi";
-
-interface Schedule {
-  Sun: string;
-  Mon: string;
-  Tue: string;
-  Wed: string;
-  Thu: string;
-  Fri: string;
-  Sat: string;
-}
 
 interface PartialUser {
   username: string;
@@ -29,7 +20,8 @@ const UserProfile: React.FC<{ username: string | string[] | undefined }> = ({ us
   useEffect(() => {
     const fetchUserProfile = async () => {
       try {
-        backendGetEnd(false, `/profile/${username}`, (data: any) => {
+        backendGetEnd(false, `/users/?username=${username}`, (data: any) => {
+          // backendGetEnd(false, `/profile/${username}`, (data: any) => {
           const user: PartialUser = data;
           setUser(user);
           setLoading(false);
@@ -53,13 +45,37 @@ const UserProfile: React.FC<{ username: string | string[] | undefined }> = ({ us
 
   return (
     <div>
-      <div>
-        <h1>User Profile - {user.username}</h1>
-        <p>Schedule: {JSON.stringify(user.schedule)}</p>
-        <p>Twitter Username: {user.twitterUsername}</p>
-        <p>Bio: {user.bio}</p>
-        <p>Timezone: {user.tz}</p>
-      </div>
+      <table className="table">
+        <thead>
+          <tr>
+            <th colSpan={2}>User Profile - {user.username}</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Schedule</td>
+            <td>{JSON.stringify(user.schedule)}</td>
+          </tr>
+          <tr>
+            <td>Schedule</td>
+            <td>
+              <ScheduleWeek schedule={user.schedule as Schedule} />
+            </td>
+          </tr>
+          <tr>
+            <td>Twitter Username</td>
+            <td>{user.twitterUsername}</td>
+          </tr>
+          <tr>
+            <td>Bio</td>
+            <td>{user.bio}</td>
+          </tr>
+          <tr>
+            <td>Timezone</td>
+            <td>{user.tz}</td>
+          </tr>
+        </tbody>
+      </table>
     </div>
   );
 };

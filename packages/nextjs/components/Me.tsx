@@ -8,6 +8,7 @@ import { backendGetEnd, backendSet } from "~~/utils/schedlBackendApi";
 
 interface Profile {
   username: string;
+  idAddressIsPublic: boolean;
   assistantXmtpAddress: string;
   ethereumAddress: string;
   twitterUsername: string;
@@ -21,6 +22,12 @@ export const Me: React.FC = () => {
   const { jwt } = useJwtContext();
   const [profile, setProfile] = useState<Profile | null>(null);
   const [bio, setBio] = useState<string>("loading...");
+  const [idAddressIsPublic, setIdAddressIsPublic] = useState<boolean>(false);
+
+  const handleToggle = () => {
+    jwt && backendSet(jwt, "idAddressIsPublic", !idAddressIsPublic);
+    setIdAddressIsPublic(!idAddressIsPublic);
+  };
 
   const handleBioChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
     setBio(event.target.value);
@@ -38,8 +45,9 @@ export const Me: React.FC = () => {
 
   useEffect(() => {
     if (jwt) {
-      backendGetEnd(jwt, "/profile/schedule", data => {
+      backendGetEnd(jwt, "/users/me", data => {
         setProfile(data);
+        setIdAddressIsPublic(data.idAddressIsPublic);
         setBio(data.bio);
       });
     }
@@ -52,6 +60,10 @@ export const Me: React.FC = () => {
     <div>
       <h2>Profile Information</h2>
       <Username username={profile.username} />
+      <p>
+        <input type="checkbox" checked={profile.idAddressIsPublic} onChange={handleToggle} className="checkbox" />{" "}
+        idAddressIsPublic: {profile.idAddressIsPublic}
+      </p>
       <p>assistantXmtpAddress: {profile.assistantXmtpAddress}</p>
       <XmtpAddress xmtpAddress={profile.assistantXmtpAddress} />
       <p>twitterUsername: {profile.twitterUsername}</p>
