@@ -2,7 +2,9 @@ import React, { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import type { NextPage } from "next";
 import { MetaHeader } from "~~/components/MetaHeader";
-import { Schedule, ScheduleWeek } from "~~/components/ScheduleWeek";
+import { Schedule } from "~~/components/ScheduleWeek";
+import { TimeSlotCalendar, TimeSlotList, getISODate } from "~~/components/TimeSlotPicker";
+import { TzSelector } from "~~/components/TzSelector";
 import { backendGetEnd } from "~~/utils/schedlBackendApi";
 
 interface PartialUser {
@@ -15,27 +17,70 @@ interface PartialUser {
 
 const UserProfile: React.FC<{ username: string | string[] | undefined }> = ({ username }) => {
   const [user, setUser] = useState<PartialUser | undefined>(undefined);
-  const [loading, setLoading] = useState(true);
+  const [avail, setAvail] = useState<any>(undefined);
+  const [loadingU, setLoadingU] = useState(true);
+  const [loadingA, setLoadingA] = useState(true);
+  const [selectedTz, setSelectedTz] = useState<string>(Intl.DateTimeFormat().resolvedOptions().timeZone);
+  const [selectedDate, setSelectedDate] = useState<Date>(new Date());
+  const [selectedDay, setSelectedDay] = useState<string>("");
 
   useEffect(() => {
     const fetchUserProfile = async () => {
+      setLoadingU(true);
       try {
         backendGetEnd(false, `/users/?username=${username}`, (data: any) => {
-          // backendGetEnd(false, `/profile/${username}`, (data: any) => {
           const user: PartialUser = data;
           setUser(user);
-          setLoading(false);
+          setLoadingU(false);
         });
       } catch (error) {
         console.error("Error fetching user profile:", error);
-        setLoading(false);
+        setLoadingU(false);
       }
     };
 
     fetchUserProfile();
   }, [username]);
 
-  if (loading) {
+  useEffect(() => {
+    const fetchUserProfile = async () => {
+      setLoadingA(true);
+      try {
+        backendGetEnd(false, `/users/availability?tz=${selectedTz}&username=${username}`, (data: any) => {
+          const times: any = data;
+          setAvail(times);
+          setLoadingA(false); // XXX
+        });
+      } catch (error) {
+        console.error("Error fetching user profile:", error);
+        setLoadingA(false);
+      }
+    };
+
+    fetchUserProfile();
+  }, [username, selectedTz]);
+
+  const handleTzChange = (newTz: string) => {
+    setSelectedTz(newTz);
+
+    setLoadingA(true);
+    backendGetEnd(false, `/users/availability?tz=${newTz}&username=${username}`, (data: any) => {
+      const times: any = data;
+      setAvail(times);
+      setLoadingA(false); // XXX
+    });
+  };
+
+  const handleDayClick = (date: Date) => {
+    // not date.toISOString() - cal day is in local tz, toLocaleDateString wrong fmt
+    const formattedDate = getISODate(date);
+    if (avail[formattedDate]) {
+      setSelectedDate(date);
+      setSelectedDay(formattedDate);
+    }
+  };
+
+  if (loadingA || loadingU) {
     return <div>Loading...</div>;
   }
 
@@ -57,12 +102,6 @@ const UserProfile: React.FC<{ username: string | string[] | undefined }> = ({ us
             <td>{JSON.stringify(user.schedule)}</td>
           </tr>
           <tr>
-            <td>Schedule</td>
-            <td>
-              <ScheduleWeek schedule={user.schedule as Schedule} />
-            </td>
-          </tr>
-          <tr>
             <td>Twitter Username</td>
             <td>{user.twitterUsername}</td>
           </tr>
@@ -76,6 +115,19 @@ const UserProfile: React.FC<{ username: string | string[] | undefined }> = ({ us
           </tr>
         </tbody>
       </table>
+      {/* {avail && <p>Availability: {JSON.stringify(avail)}</p>} */}
+      <TzSelector currentTz={selectedTz} onTzChange={handleTzChange} />
+      <p>
+        Selected date: {selectedDate.toDateString()} {selectedDay}
+      </p>
+      <div>
+        <div style={{ float: "left" }}>
+          <TimeSlotCalendar availableDates={avail} handleDayClick={handleDayClick} />
+        </div>
+        <div style={{ float: "right" }}>
+          <TimeSlotList ranges={avail[selectedDay]} slotMinutes={30} />
+        </div>
+      </div>
     </div>
   );
 };

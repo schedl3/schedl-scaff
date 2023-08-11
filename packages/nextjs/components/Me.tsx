@@ -23,6 +23,7 @@ export const Me: React.FC = () => {
   const [profile, setProfile] = useState<Profile | null>(null);
   const [bio, setBio] = useState<string>("loading...");
   const [idAddressIsPublic, setIdAddressIsPublic] = useState<boolean>(false);
+  const [selectedTz, setSelectedTz] = useState<string>(Intl.DateTimeFormat().resolvedOptions().timeZone);
 
   const handleToggle = () => {
     jwt && backendSet(jwt, "idAddressIsPublic", !idAddressIsPublic);
@@ -36,7 +37,6 @@ export const Me: React.FC = () => {
   const handleSaveBio = () => {
     jwt && backendSet(jwt, "bio", bio);
   };
-  const [selectedTz, setSelectedTz] = useState<string>(Intl.DateTimeFormat().resolvedOptions().timeZone);
 
   const handleTzChange = (newTz: string) => {
     setSelectedTz(newTz);
