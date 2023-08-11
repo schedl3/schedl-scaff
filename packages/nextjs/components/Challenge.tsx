@@ -20,7 +20,7 @@ export const Challenge = () => {
         return;
       } else if (data) {
         setSignature(data);
-        backendSiwe(message, signature, (data: any) => {
+        backendSiwe(message, data, (data: any) => {
           // console.log(data);
           setJwt(data.access_token);
         });
