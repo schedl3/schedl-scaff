@@ -1,11 +1,14 @@
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/router";
+import { DateTime } from "luxon";
 import type { NextPage } from "next";
+import { useAccount } from "wagmi";
+import { useJwtContext } from "~~//contexts/JwtContext";
 import { MetaHeader } from "~~/components/MetaHeader";
 import { Schedule } from "~~/components/ScheduleWeek";
 import { TimeSlotCalendar, TimeSlotList, getISODate } from "~~/components/TimeSlotPicker";
 import { TzSelector } from "~~/components/TzSelector";
-import { backendGetEnd } from "~~/utils/schedlBackendApi";
+import { backendBook, backendGetEnd } from "~~/utils/schedlBackendApi";
 
 interface PartialUser {
   username: string;
@@ -15,7 +18,9 @@ interface PartialUser {
   tz: string;
 }
 
-const UserProfile: React.FC<{ username: string | string[] | undefined }> = ({ username }) => {
+const UserProfile: React.FC<{ username: string | undefined }> = ({ username }) => {
+  const { jwt } = useJwtContext();
+  const account = useAccount();
   const [user, setUser] = useState<PartialUser | undefined>(undefined);
   const [avail, setAvail] = useState<any>(undefined);
   const [loadingU, setLoadingU] = useState(true);
@@ -80,6 +85,17 @@ const UserProfile: React.FC<{ username: string | string[] | undefined }> = ({ us
     }
   };
 
+  const handleBookSlot = (slot: Date) => {
+    const { hour, minute } = DateTime.fromJSDate(slot, { zone: "utc" });
+    let slotDT = DateTime.fromJSDate(selectedDate);
+    slotDT = slotDT.set({ hour, minute });
+    slotDT = slotDT.setZone(selectedTz);
+    jwt &&
+      account.address &&
+      username &&
+      backendBook(jwt, account.address, username, slotDT.toUTC().toISO()!, 30, "test2");
+  };
+
   if (loadingA || loadingU) {
     return <div>Loading...</div>;
   }
@@ -125,7 +141,7 @@ const UserProfile: React.FC<{ username: string | string[] | undefined }> = ({ us
           <TimeSlotCalendar availableDates={avail} handleDayClick={handleDayClick} />
         </div>
         <div style={{ float: "right" }}>
-          <TimeSlotList ranges={avail[selectedDay]} slotMinutes={30} />
+          <TimeSlotList ranges={avail[selectedDay]} slotMinutes={30} handleBookSlot={handleBookSlot} />
         </div>
       </div>
     </div>
@@ -134,7 +150,7 @@ const UserProfile: React.FC<{ username: string | string[] | undefined }> = ({ us
 
 const UserPage: NextPage = () => {
   const router = useRouter();
-  const { username } = router.query;
+  const { username } = router.query; // XXX string | string[] | undefined
   return (
     <>
       <MetaHeader title={`Schedl UI | ${username}'s Page`} description="">
@@ -143,7 +159,7 @@ const UserPage: NextPage = () => {
         <link href="https://fonts.googleapis.com/css2?family=Bai+Jamjuree&display=swap" rel="stylesheet" />
       </MetaHeader>
       <div className="grid lg:grid-cols-2 flex-grow" data-theme="exampleUi">
-        {username ? <UserProfile username={username} /> : null}
+        {username ? <UserProfile username={Array.isArray(username) ? username[0] : username} /> : null}
       </div>
     </>
   );

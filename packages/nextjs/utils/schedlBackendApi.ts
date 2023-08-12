@@ -22,6 +22,39 @@ export const backendSiwe = (message: string, signature: string, cb?: (data: any)
     });
 };
 
+export const backendBook = (
+  jwt: string,
+  fromAddress: string,
+  toUsername: string,
+  start: string,
+  minutes: number,
+  msg: string,
+  cb?: (data: any) => void,
+) => {
+  const bookingData = {
+    fromAddress,
+    toUsername,
+    start,
+    minutes,
+    msg,
+  };
+
+  axios
+    .post(BACKEND_URL + "/bookings/me", bookingData, {
+      headers: {
+        Authorization: `Bearer ${jwt}`,
+        "Content-Type": "application/json",
+      },
+    })
+    .then(response => {
+      console.log("Booking successfull!", response.data);
+      cb?.(response.data);
+    })
+    .catch(error => {
+      console.error("Error booking", error);
+    });
+};
+
 export const backendSet = (jwt: string, propName: string, val: string | object | boolean, cb?: (data: any) => void) => {
   axios
     .patch(
