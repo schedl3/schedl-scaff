@@ -2,6 +2,11 @@ import React, { useState } from "react";
 import Calendar from "react-calendar";
 import "react-calendar/dist/Calendar.css";
 
+type Time24H = string;
+type Date24H = Date;
+const time24HtoDate24H = (t: Time24H): Date24H => new Date(`1970-01-01T${t}`);
+const fmtDate24H = (d: Date24H) => d.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+
 export const getISODate = (date: Date) =>
   `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, "0")}-${date
     .getDate()
@@ -39,39 +44,37 @@ export function TimeSlotCalendar({ availableDates, handleDayClick }: TimeSlotCal
 }
 
 export interface TimeSlotListProps {
-  ranges: [string, string][];
+  ranges: [Time24H, Time24H][];
   slotMinutes: number;
 }
 
 export function TimeSlotList({ ranges, slotMinutes }: TimeSlotListProps) {
   const [selectedSlot, setSelectedSlot] = useState<number | null>(null);
-  const generateTimeSlots = (range: [string, string]): string[] => {
+  const generateTimeSlots = (range: [Time24H, Time24H]): Date24H[] => {
+    const slots: Date24H[] = [];
     const [startTime, endTime] = range;
-    const slots: string[] = [];
-    const startHour = new Date(`1970-01-01T${startTime}`);
-    const endHour = new Date(`1970-01-01T${endTime}`);
+    const startHour = time24HtoDate24H(startTime);
 
-    while (startHour < endHour) {
-      const formattedStart = startHour.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
-      slots.push(formattedStart);
+    while (startHour < time24HtoDate24H(endTime)) {
+      slots.push(new Date(startHour));
       startHour.setMinutes(startHour.getMinutes() + slotMinutes);
     }
 
     return slots;
   };
 
-  const bookSlot = (selectedSlot: string) => {
-    console.log(`Booking slot: ${selectedSlot}`);
+  const bookSlot = (slot: Date24H) => {
+    console.log(`Booking slot: ${slot}`);
   };
 
   if (!ranges || ranges.length === 0) {
     return null;
   }
-  const allTimeSlots = ranges.flatMap(generateTimeSlots);
+  const allTimeSlots: Date24H[] = ranges.flatMap(generateTimeSlots);
 
   return (
     <div className="time-slot-list">
-      <p>Selected slot: {selectedSlot === null ? "..." : allTimeSlots[selectedSlot]}</p>
+      <p>Selected slot: {selectedSlot === null ? "..." : fmtDate24H(allTimeSlots[selectedSlot])}</p>
       {allTimeSlots.map((slot, index) => (
         <div
           className={`time-slot-hour ${selectedSlot === index ? "selected" : ""}`}
@@ -80,13 +83,13 @@ export function TimeSlotList({ ranges, slotMinutes }: TimeSlotListProps) {
         >
           {selectedSlot === index ? (
             <>
-              {slot}
-              <button onClick={() => bookSlot(slot)} className="btn">
+              {fmtDate24H(slot)}
+              <button onClick={() => bookSlot(allTimeSlots[selectedSlot])} className="btn">
                 Book
               </button>
             </>
           ) : (
-            slot
+            fmtDate24H(slot)
           )}
         </div>
       ))}
