@@ -60,6 +60,10 @@ export function TimeSlotList({ ranges, slotMinutes }: TimeSlotListProps) {
     return slots;
   };
 
+  const bookSlot = (selectedSlot: string) => {
+    console.log(`Booking slot: ${selectedSlot}`);
+  };
+
   if (!ranges || ranges.length === 0) {
     return null;
   }
@@ -74,7 +78,16 @@ export function TimeSlotList({ ranges, slotMinutes }: TimeSlotListProps) {
           key={index}
           onClick={() => setSelectedSlot(index)}
         >
-          {slot}
+          {selectedSlot === index ? (
+            <>
+              {slot}
+              <button onClick={() => bookSlot(slot)} className="btn">
+                Book
+              </button>
+            </>
+          ) : (
+            slot
+          )}
         </div>
       ))}
     </div>
