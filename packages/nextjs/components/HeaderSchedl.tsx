@@ -5,7 +5,6 @@ import { useRouter } from "next/router";
 import { Bars3Icon, SparklesIcon } from "@heroicons/react/24/outline";
 import { Challenge } from "~~/components/Challenge";
 import { RainbowKitCustomConnectButton } from "~~/components/scaffold-eth";
-// import { FaucetButton, RainbowKitCustomConnectButton } from "~~/components/scaffold-eth";
 import { useOutsideClick } from "~~/hooks/scaffold-eth";
 
 const NavLink = ({ href, children }: { href: string; children: React.ReactNode }) => {
@@ -39,12 +38,9 @@ export const Header = () => {
   const navLinks = (
     <>
       <li>
-        <NavLink href="/schedl-ui">Home</NavLink>
-      </li>
-      <li>
-        <NavLink href="/me">
+        <NavLink href="/">
           <SparklesIcon className="h-4 w-4" />
-          Profile
+          Home
         </NavLink>
       </li>
     </>
@@ -88,7 +84,6 @@ export const Header = () => {
       </div>
       <div className="navbar-end flex-grow mr-4">
         <RainbowKitCustomConnectButton />
-        {/* <FaucetButton /> */}
         <Challenge />
       </div>
     </div>
