@@ -3,6 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { Bars3Icon, SparklesIcon } from "@heroicons/react/24/outline";
+import { Challenge } from "~~/components/Challenge";
 import { RainbowKitCustomConnectButton } from "~~/components/scaffold-eth";
 // import { FaucetButton, RainbowKitCustomConnectButton } from "~~/components/scaffold-eth";
 import { useOutsideClick } from "~~/hooks/scaffold-eth";
@@ -88,6 +89,7 @@ export const Header = () => {
       <div className="navbar-end flex-grow mr-4">
         <RainbowKitCustomConnectButton />
         {/* <FaucetButton /> */}
+        <Challenge />
       </div>
     </div>
   );

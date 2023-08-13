@@ -1,32 +1,40 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useAccount, useSignMessage } from "wagmi";
 import { useJwtContext } from "~~/contexts/JwtContext";
 import { backendGetChallenge, backendSiwe } from "~~/utils/schedlBackendApi";
 
 export const Challenge = () => {
-  const [challenge, setChallenge] = useState("");
-  const [message, setMessage] = useState("gm wagmi frens");
-  const [signature, setSignature] = useState("");
+  const [_challenge, setChallenge] = useState(""); // eslint-disable-line @typescript-eslint/no-unused-vars
+  const [message, setMessage] = useState("");
+  const [_signature, setSignature] = useState(""); // eslint-disable-line @typescript-eslint/no-unused-vars
   const { jwt, setJwt } = useJwtContext();
   const [error, setError] = useState("");
   const account = useAccount();
   const { /* data, isError, isLoading, isSuccess, */ signMessage } = useSignMessage({
     message,
-    async onSettled(data, error) {
-      console.log("Settled", { data, error });
+    async onSettled(signature, error) {
       if (error) {
         setError(error.message);
 
         return;
-      } else if (data) {
-        setSignature(data);
-        backendSiwe(message, data, (data: any) => {
-          // console.log(data);
+      } else if (signature) {
+        setSignature(signature);
+        backendSiwe(message, signature, (data: any) => {
           setJwt(data.access_token);
         });
       }
     },
   });
+
+  useEffect(() => {
+    console.log("message:", message);
+    if (!message) {
+      return;
+    }
+    setSignature("");
+    setError("");
+    signMessage();
+  }, [message, signMessage]);
 
   const handleChallengeClick = async () => {
     try {
@@ -50,26 +58,34 @@ export const Challenge = () => {
         `Nonce: ${nonce}\n` +
         `Issued At: ${date}`;
       setMessage(template(domain, nonce, account.address, new Date().toISOString()));
-      setSignature("");
-      setError("");
     } catch (error) {
       console.error("Error fetching nonce:", error);
       setError("Error fetching nonce. Please try again later.");
     }
   };
 
+  if (jwt) {
+    return (
+      <div>
+        <button onClick={() => setJwt("")} className="btn btn-sm btn-primary">
+          Logout
+        </button>
+      </div>
+    );
+  }
+
   return (
     <div>
-      <p>Challenge: {challenge}</p>
+      {/* <p>Challenge: {challenge}</p> */}
       <button onClick={handleChallengeClick} className="btn btn-sm btn-primary">
-        Challenge
+        Sign In
       </button>
-      <button onClick={() => signMessage()} disabled={!challenge} className="btn btn-sm btn-primary">
+      {/* <button onClick={() => signMessage()} disabled={!challenge} className="btn btn-sm btn-primary">
         Sign and Post
-      </button>
+      </button> */}
       {error && <p>Error: {error}</p>}
-      {signature && <p>Signature: {signature}</p>}
-      {jwt && <p>JWT: {jwt}</p>}
+      {/* {signature && <p>Signature: {signature}</p>} */}
+      {/* {jwt && <p>JWT: {jwt}</p>} */}
     </div>
   );
 };
