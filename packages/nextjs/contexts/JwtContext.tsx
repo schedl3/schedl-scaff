@@ -1,4 +1,22 @@
 import React, { ReactNode, createContext, useContext, useEffect, useState } from "react";
+import jwt from "jsonwebtoken";
+
+interface DecodedToken {
+  exp: number; // Expiration timestamp
+  // ignore other claims
+}
+
+function isTokenExpired(token: string): boolean {
+  try {
+    const decodedToken: DecodedToken = jwt.decode(token) as DecodedToken;
+    const currentTime = Date.now() / 1000;
+    console.log("Decoded token:", decodedToken.exp, "Current time:", currentTime);
+    return decodedToken.exp < currentTime;
+  } catch (error) {
+    console.error("Error decoding token:", error);
+    return true; // Assuming an error means the token is expired
+  }
+}
 
 interface JwtContextValue {
   jwt: string | null;
@@ -27,7 +45,7 @@ const JwtProvider: React.FC<JwtProviderProps> = ({ children }) => {
     if (!tokenFromStorage) {
       return;
     }
-    setJwt(tokenFromStorage);
+    !isTokenExpired(tokenFromStorage) && setJwt(tokenFromStorage);
   }, []);
 
   useEffect(() => {
