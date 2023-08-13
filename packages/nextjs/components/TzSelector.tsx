@@ -12,10 +12,9 @@ export const TzSelector: React.FC<TzSelectorProps> = ({ currentTz, onTzChange })
   };
 
   return (
-    <div>
-      <h2>Time Zone Selector</h2>
-      <blockquote>Please make a selection</blockquote>
-      <div className="select-wrapper">
+    <div className="flex items-center mb-4">
+      <div className="flex-grow">
+        <p className="font-bold">Time Zone</p>
         <TimezoneSelect value={currentTz} onChange={handleTzChange} />
       </div>
     </div>

@@ -1,7 +1,6 @@
 import type { NextPage } from "next";
 import { Me } from "~~/components/Me";
 import { MetaHeader } from "~~/components/MetaHeader";
-import { TwitterConnect } from "~~/components/TwitterConnect";
 
 const SchedlUI: NextPage = () => {
   return (
@@ -11,8 +10,8 @@ const SchedlUI: NextPage = () => {
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link href="https://fonts.googleapis.com/css2?family=Bai+Jamjuree&display=swap" rel="stylesheet" />
       </MetaHeader>
-      <div className="grid lg:grid-cols-2 flex-grow" data-theme="exampleUi">
-        <TwitterConnect />
+      {/* <div className="grid lg:grid-cols-2 flex-grow" data-theme="exampleUi"> */}
+      <div className="grid lg:grid-cols-1 flex-grow" data-theme="exampleUi">
         <Me />
       </div>
     </>
