@@ -29,9 +29,9 @@ export const Me: React.FC = () => {
   };
 
   const handleToggle = () => {
-    jwt && backendSet(jwt, "idAddressIsPublic", !profile!.idAddressIsPublic);
+    jwt && profile && backendSet(jwt, "idAddressIsPublic", !profile.idAddressIsPublic);
     // setIdAddressIsPublic(!idAddressIsPublic);
-    setProfile({ ...profile, idAddressIsPublic: !profile!.idAddressIsPublic } as Profile);
+    profile && setProfile({ ...profile, idAddressIsPublic: !profile.idAddressIsPublic } as Profile);
   };
 
   const handleTzChange = (newTz: string) => {
@@ -144,14 +144,22 @@ export const Me: React.FC = () => {
           onSave={handleFieldSave}
         />
         <ProfileField label="Bio" value={profile.bio} propName="bio" onSave={handleFieldSave} isTextarea={true} />
-        <TzSelector currentTz={selectedTz} onTzChange={handleTzChange} />
       </div>
 
       {/* <Profile /> */}
 
       <div className="w-full p-8" style={{ display: activeTab == "schedule" ? "block" : "none" }}>
-        <p>schedule: {JSON.stringify(profile.schedule)}</p>
-        <ScheduleWeek schedule={profile.schedule as Schedule} />
+        <TzSelector currentTz={selectedTz} onTzChange={handleTzChange} />
+        <div className="bg-yellow-300 grid grid-cols-2 ">
+          <div className="p-4">
+            <h2 className="text-2xl font-bold mb-4">Weekly</h2>
+            <ScheduleWeek schedule={profile.schedule as Schedule} />
+          </div>
+          <div className="p-4">
+            <h2 className="text-2xl font-bold mb-4">Upcoming</h2>
+          </div>
+        </div>
+        {/* <p>schedule: {JSON.stringify(profile.schedule)}</p> */}
       </div>
     </div>
   );
