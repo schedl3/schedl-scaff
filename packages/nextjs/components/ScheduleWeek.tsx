@@ -40,7 +40,7 @@ export const ScheduleWeek: React.FC<ScheduleWeekProps> = ({ schedule }) => {
 
   const overrideDaisyRounding = { borderRadius: 0 };
   return (
-    <div className="w-8">
+    <div className="w-fit">
       {/* {JSON.stringify(scheduleData)} */}
       <table className="table table-zebra ">
         {/* <thead>
@@ -55,7 +55,7 @@ export const ScheduleWeek: React.FC<ScheduleWeekProps> = ({ schedule }) => {
               <td className="p-4" style={overrideDaisyRounding}>
                 {day}
               </td>
-              <td className="p-1">
+              <td className="p-1" style={overrideDaisyRounding}>
                 <UpdateRanges ranges={ranges} onChange={(newRanges: CSVRanges) => handleDayChange(day, newRanges)} />
               </td>
             </tr>

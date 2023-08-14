@@ -3,6 +3,7 @@ import { useJwtContext } from "../contexts/JwtContext";
 import { Schedule, ScheduleWeek } from "./ScheduleWeek";
 import { TzSelector } from "./TzSelector";
 import { TwitterConnect } from "~~/components/TwitterConnect";
+import { Address } from "~~/components/scaffold-eth";
 import { backendGetEnd, backendSet } from "~~/utils/schedlBackendApi";
 
 interface Profile {
@@ -17,9 +18,20 @@ interface Profile {
   idAddress: string;
 }
 
+interface Booking {
+  status: string;
+  fromAddress: string;
+  toUsername: string;
+  start: string; // Date but get from mongo as string
+  minutes: number;
+  msg: string;
+}
+
 export const Me: React.FC = () => {
   const { jwt } = useJwtContext();
   const [profile, setProfile] = useState<Profile | null>(null);
+  const [bookingsToMe, setBookingsToMe] = useState<Booking[]>([]);
+  const [bookingsFromMe, setBookingsFromMe] = useState<Booking[]>([]);
   const [selectedTz, setSelectedTz] = useState<string>(Intl.DateTimeFormat().resolvedOptions().timeZone);
   const tabs = ["verify", "profile", "schedule"];
   const [activeTab, setActiveTab] = useState<string>("verify");
@@ -49,6 +61,12 @@ export const Me: React.FC = () => {
     if (jwt) {
       backendGetEnd(jwt, "/users/me", data => {
         setProfile(data);
+      });
+      backendGetEnd(jwt, "/bookings/me/to", data => {
+        setBookingsToMe(data);
+      });
+      backendGetEnd(jwt, "/bookings/me/from", data => {
+        setBookingsFromMe(data);
       });
     }
   }, [jwt]);
@@ -150,13 +168,91 @@ export const Me: React.FC = () => {
 
       <div className="w-full p-8" style={{ display: activeTab == "schedule" ? "block" : "none" }}>
         <TzSelector currentTz={selectedTz} onTzChange={handleTzChange} />
-        <div className="bg-yellow-300 grid grid-cols-2 ">
-          <div className="p-4">
+        <div className="bg-yellow-300 w-full place-content-start  grid grid-cols-1 md:grid-cols-3 ">
+          <div className="bg-lime-300 px-4 py-4 col-span-1 mx-4 w-fit md:col-span-1">
             <h2 className="text-2xl font-bold mb-4">Weekly</h2>
             <ScheduleWeek schedule={profile.schedule as Schedule} />
           </div>
-          <div className="p-4">
+          <div className=" bg-lime-300 p-4 w-fit col-span-1 md:col-span-2 ">
             <h2 className="text-2xl font-bold mb-4">Upcoming</h2>
+
+            <h2 className="text-2xl font-bold mb-4">Bookings To Me</h2>
+            <table className="">
+              <thead>
+                <tr>
+                  <th>Start</th>
+                  <th>Status</th>
+                  <th>From</th>
+                  <th>Minutes</th>
+                </tr>
+              </thead>
+              <tbody>
+                {bookingsToMe
+                  .filter(booking => new Date(booking.start) > new Date())
+                  .map((booking, index) => (
+                    <React.Fragment key={index}>
+                      <tr>
+                        <td>
+                          {new Date(booking.start).toISOString().substr(0, 10)}{" "}
+                          {new Date(booking.start).toLocaleString("en-US", {
+                            hour: "2-digit",
+                            minute: "2-digit",
+                            hour12: false,
+                          })}
+                        </td>
+                        <td>{booking.status}</td>
+                        <td>
+                          <Address address={booking.fromAddress} />
+                        </td>
+                        <td>{booking.minutes}</td>
+                      </tr>
+                      <tr>
+                        <td colSpan={4}>
+                          <p className="whitespace-pre-line flex-grow bg-gray-200 text-gray-600 mr-2 p-3">
+                            {booking.msg}
+                          </p>
+                        </td>
+                      </tr>
+                    </React.Fragment>
+                  ))}
+              </tbody>
+            </table>
+
+            <h2 className="text-2xl font-bold mb-4">Bookings From Me</h2>
+            <table className="">
+              <thead>
+                <tr>
+                  <th>Start</th>
+                  <th>Status</th>
+                  <th>To</th>
+                  <th>Minutes</th>
+                </tr>
+              </thead>
+              <tbody>
+                {bookingsFromMe
+                  .filter(booking => new Date(booking.start) > new Date())
+                  .map((booking, index) => (
+                    <React.Fragment key={index}>
+                      <tr key={index}>
+                        <td>
+                          {new Date(booking.start).toLocaleDateString()}{" "}
+                          {new Date(booking.start).toLocaleString([], { hour: "2-digit", minute: "2-digit" })}
+                        </td>
+                        <td>{booking.status}</td>
+                        <td>{booking.toUsername}</td>
+                        <td>{booking.minutes}</td>
+                      </tr>
+                      <tr>
+                        <td colSpan={4}>
+                          <p className="whitespace-pre-line flex-grow bg-gray-200 text-gray-600 mr-2 p-3">
+                            {booking.msg}
+                          </p>
+                        </td>
+                      </tr>
+                    </React.Fragment>
+                  ))}
+              </tbody>
+            </table>
           </div>
         </div>
         {/* <p>schedule: {JSON.stringify(profile.schedule)}</p> */}
