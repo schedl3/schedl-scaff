@@ -5,7 +5,7 @@ import { MetaHeader } from "~~/components/MetaHeader";
 const SchedlUI: NextPage = () => {
   return (
     <>
-      <MetaHeader title="Schedl UI | Scaffold-ETH 2" description="">
+      <MetaHeader title="Schedl" description="">
         {/* We are importing the font this way to lighten the size of SE2. */}
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link href="https://fonts.googleapis.com/css2?family=Bai+Jamjuree&display=swap" rel="stylesheet" />

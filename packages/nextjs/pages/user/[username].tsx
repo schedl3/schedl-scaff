@@ -5,17 +5,15 @@ import type { NextPage } from "next";
 import { useAccount } from "wagmi";
 import { useJwtContext } from "~~//contexts/JwtContext";
 import { MetaHeader } from "~~/components/MetaHeader";
-import { Schedule } from "~~/components/ScheduleWeek";
-import { TimeSlotCalendar, TimeSlotList, getISODate } from "~~/components/TimeSlotPicker";
+import { TimeSlotCalendar, TimeSlotList, fmtEpochDate24H, getISODate } from "~~/components/TimeSlotPicker";
 import { TzSelector } from "~~/components/TzSelector";
 import { backendBook, backendGetEnd } from "~~/utils/schedlBackendApi";
 
 interface PartialUser {
   username: string;
-  schedule: Schedule;
+  ethereumAddress: string;
   twitterUsername: string;
   bio: string;
-  tz: string;
 }
 
 const UserProfile: React.FC<{ username: string | undefined }> = ({ username }) => {
@@ -28,6 +26,8 @@ const UserProfile: React.FC<{ username: string | undefined }> = ({ username }) =
   const [selectedTz, setSelectedTz] = useState<string>(Intl.DateTimeFormat().resolvedOptions().timeZone);
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
   const [selectedDay, setSelectedDay] = useState<string>("");
+  const [selectedSlot, setSelectedSlot] = useState<Date | null>(null);
+  const [message, setMessage] = useState<string>("");
 
   useEffect(() => {
     const fetchUserProfile = async () => {
@@ -86,14 +86,29 @@ const UserProfile: React.FC<{ username: string | undefined }> = ({ username }) =
   };
 
   const handleBookSlot = (slot: Date) => {
-    const { hour, minute } = DateTime.fromJSDate(slot, { zone: "utc" });
+    setSelectedSlot(slot);
+  };
+
+  const handleTextareaChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setMessage(event.target.value);
+  };
+
+  const handleClickRequestBooking = () => {
+    console.log("Message saved:", message);
+    if (!selectedSlot || !selectedDate) {
+      console.error("No slot/date selected");
+      return;
+    }
+    const { hour, minute } = DateTime.fromJSDate(selectedSlot, { zone: "utc" });
     let slotDT = DateTime.fromJSDate(selectedDate);
     slotDT = slotDT.set({ hour, minute });
     slotDT = slotDT.setZone(selectedTz);
-    jwt &&
-      account.address &&
-      username &&
-      backendBook(jwt, account.address, username, slotDT.toUTC().toISO()!, 30, "test2");
+    const t = slotDT.toUTC().toISO();
+    if (!t) {
+      console.error("Invalid date " + slotDT);
+      return;
+    }
+    jwt && account.address && username && backendBook(jwt, account.address, username, t, 30, message);
   };
 
   if (loadingA || loadingU) {
@@ -106,42 +121,59 @@ const UserProfile: React.FC<{ username: string | undefined }> = ({ username }) =
 
   return (
     <div>
-      <table className="table">
-        <thead>
-          <tr>
-            <th colSpan={2}>User Profile - {user.username}</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>Schedule</td>
-            <td>{JSON.stringify(user.schedule)}</td>
-          </tr>
-          <tr>
-            <td>Twitter Username</td>
-            <td>{user.twitterUsername}</td>
-          </tr>
-          <tr>
-            <td>Bio</td>
-            <td>{user.bio}</td>
-          </tr>
-          <tr>
-            <td>Timezone</td>
-            <td>{user.tz}</td>
-          </tr>
-        </tbody>
-      </table>
-      {/* {avail && <p>Availability: {JSON.stringify(avail)}</p>} */}
-      <TzSelector currentTz={selectedTz} onTzChange={handleTzChange} />
-      <p>
-        Selected date: {selectedDate.toDateString()} {selectedDay}
-      </p>
-      <div>
-        <div style={{ float: "left" }}>
-          <TimeSlotCalendar availableDates={avail} handleDayClick={handleDayClick} />
+      <div className="flex flex-col justify-center items-center p-0 bg-gradient-to-b from-yellow-400 to-white">
+        <p className="text-3xl font-bold">{user.username}</p>
+        {user.ethereumAddress ? <p className="text-3xl">{user.ethereumAddress}</p> : null}
+        {user.twitterUsername ? <p className="text-3xl">X: @{user.twitterUsername}</p> : null}
+      </div>
+
+      <div className="flex flex-col justify-center items-center p-20 ">
+        <h1 className="text-4xl md:text-6xl font-bold">About</h1>
+        <p className="text-lg md:text-xl">{user.bio}</p>
+      </div>
+
+      <div className="bg-yellow-300 w-full  grid grid-cols-2 md:grid-cols-2 ">
+        <div className="bg-lime-300 px-4 py-4 col-span-1 mx-4 md:col-span-1  grid grid-cols-2 ">
+          <div className="bg-lime-300 px-4 py-4 col-span-1 mx-4 md:col-span-1">
+            <TzSelector currentTz={selectedTz} onTzChange={handleTzChange} />
+
+            <TimeSlotCalendar availableDates={avail} handleDayClick={handleDayClick} />
+          </div>
+          <div className="bg-lime-300 px-4 py-4  col-span-1 mx-4 md:col-span-1">
+            <TimeSlotList ranges={avail[selectedDay]} slotMinutes={30} handleBookSlot={handleBookSlot} />
+          </div>
         </div>
-        <div style={{ float: "right" }}>
-          <TimeSlotList ranges={avail[selectedDay]} slotMinutes={30} handleBookSlot={handleBookSlot} />
+        <div className="bg-lime-300 px-4 py-4 col-span-1 mx-4 md:col-span-1">
+          <div className="bg-white p-4 rounded-md border border-gray-300">
+            <h2 className="text-lg font-semibold mb-2">Booking Request</h2>
+
+            <div className="flex items-center">
+              <p className="m-1 text-sm text-gray-600 w-20">To:</p>
+              <p className="m-1 font-bold">{username}</p>
+            </div>
+            <div className="pb-0 flex items-center">
+              <p className="m-1 text-sm text-gray-600 w-20">Date:</p>
+              <p className="m-1 font-bold">{selectedDate.toDateString()}</p>
+            </div>
+            <div className="pb-0 flex items-center">
+              <p className="m-1 text-sm text-gray-600 w-20">Time:</p>
+              <p className="m-1 font-bold">{selectedSlot === null ? "..." : fmtEpochDate24H(selectedSlot)}</p>
+            </div>
+
+            <label className="m-1 text-sm text-gray-600 w-20">Message:</label>
+            <textarea
+              className="w-full m-1 p-2 border rounded-md resize-none"
+              rows={5}
+              value={message}
+              onChange={handleTextareaChange}
+            ></textarea>
+            <button
+              className="mt-4 px-6 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600"
+              onClick={handleClickRequestBooking}
+            >
+              Request Booking
+            </button>
+          </div>
         </div>
       </div>
     </div>
@@ -153,12 +185,12 @@ const UserPage: NextPage = () => {
   const { username } = router.query; // XXX string | string[] | undefined
   return (
     <>
-      <MetaHeader title={`Schedl UI | ${username}'s Page`} description="">
+      <MetaHeader title={`Schedl UI | ${username}'s Booking Page`} description="">
         {/* We are importing the font this way to lighten the size of SE2. */}
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link href="https://fonts.googleapis.com/css2?family=Bai+Jamjuree&display=swap" rel="stylesheet" />
       </MetaHeader>
-      <div className="grid lg:grid-cols-2 flex-grow" data-theme="exampleUi">
+      <div className="grid lg:grid-cols-1 flex-grow" data-theme="exampleUi">
         {username ? <UserProfile username={Array.isArray(username) ? username[0] : username} /> : null}
       </div>
     </>

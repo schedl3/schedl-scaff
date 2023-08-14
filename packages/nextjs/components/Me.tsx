@@ -32,7 +32,6 @@ export const Me: React.FC = () => {
   const [profile, setProfile] = useState<Profile | null>(null);
   const [bookingsToMe, setBookingsToMe] = useState<Booking[]>([]);
   const [bookingsFromMe, setBookingsFromMe] = useState<Booking[]>([]);
-  const [selectedTz, setSelectedTz] = useState<string>(Intl.DateTimeFormat().resolvedOptions().timeZone);
   const tabs = ["verify", "profile", "schedule"];
   const [activeTab, setActiveTab] = useState<string>("verify");
 
@@ -47,8 +46,7 @@ export const Me: React.FC = () => {
   };
 
   const handleTzChange = (newTz: string) => {
-    setSelectedTz(newTz);
-    jwt && backendSet(jwt, "tz", newTz);
+    handleFieldSave("tz", newTz);
   };
 
   const handleFieldSave = (fieldName: string, newValue: string) => {
@@ -167,7 +165,7 @@ export const Me: React.FC = () => {
       {/* <Profile /> */}
 
       <div className="w-full p-8" style={{ display: activeTab == "schedule" ? "block" : "none" }}>
-        <TzSelector currentTz={selectedTz} onTzChange={handleTzChange} />
+        <TzSelector currentTz={profile.tz} onTzChange={handleTzChange} />
         <div className="bg-yellow-300 w-full place-content-start  grid grid-cols-1 md:grid-cols-3 ">
           <div className="bg-lime-300 px-4 py-4 col-span-1 mx-4 w-fit md:col-span-1">
             <h2 className="text-2xl font-bold mb-4">Weekly</h2>

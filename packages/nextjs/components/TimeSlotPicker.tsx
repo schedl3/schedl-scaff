@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+// import React, { useState } from "react";
 import Calendar from "react-calendar";
 import "react-calendar/dist/Calendar.css";
 
@@ -7,7 +7,7 @@ type Date24H = Date;
 const pad02 = (n: number) => n.toString().padStart(2, "0");
 const time24HtoEpochDate24H = (t: Time24H): Date24H => new Date(`1970-01-01T${t}Z`);
 // NOT: d.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
-const fmtEpochDate24H = (d: Date24H) => `${pad02(d.getUTCHours())}:${pad02(d.getUTCMinutes())}`;
+export const fmtEpochDate24H = (d: Date24H) => `${pad02(d.getUTCHours())}:${pad02(d.getUTCMinutes())}`;
 
 export const getISODate = (date: Date) =>
   `${date.getFullYear()}-${pad02(date.getMonth() + 1)}-${pad02(date.getDate())}`;
@@ -49,7 +49,8 @@ export interface TimeSlotListProps {
 }
 
 export function TimeSlotList({ ranges, slotMinutes, handleBookSlot }: TimeSlotListProps) {
-  const [selectedSlot, setSelectedSlot] = useState<number | null>(null);
+  // TODO track selected slot
+  // const [selectedSlot, setSelectedSlot] = useState<number | null>(null);
   const generateTimeSlots = (range: [Time24H, Time24H]): Date24H[] => {
     const slots: Date24H[] = [];
     const [startTime, endTime] = range;
@@ -67,26 +68,18 @@ export function TimeSlotList({ ranges, slotMinutes, handleBookSlot }: TimeSlotLi
     return null;
   }
   const allTimeSlots: Date24H[] = ranges.flatMap(generateTimeSlots);
-
+  const slotClass =
+    "p-4 m-2 bg-white border border-gray-300 rounded-sm hover:bg-gray-100 hover:shadow-md transition duration-300";
   return (
     <div className="time-slot-list">
-      <p>Selected slot: {selectedSlot === null ? "..." : fmtEpochDate24H(allTimeSlots[selectedSlot])}</p>
       {allTimeSlots.map((slot, index) => (
         <div
-          className={`time-slot-hour ${selectedSlot === index ? "selected" : ""}`}
+          // className={`${slotClass} time-slot-hour ${selectedSlot === index ? "selected" : ""}`}
+          className={`${slotClass} time-slot-hour `}
           key={index}
-          onClick={() => setSelectedSlot(index)}
+          onClick={() => handleBookSlot(allTimeSlots[index])}
         >
-          {selectedSlot === index ? (
-            <>
-              {fmtEpochDate24H(slot)}
-              <button onClick={() => handleBookSlot(allTimeSlots[selectedSlot])} className="btn">
-                Book
-              </button>
-            </>
-          ) : (
-            fmtEpochDate24H(slot)
-          )}
+          {fmtEpochDate24H(slot)}
         </div>
       ))}
     </div>
