@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useJwtContext } from "../contexts/JwtContext";
 import { Schedule, ScheduleWeek } from "./ScheduleWeek";
 import { TzSelector } from "./TzSelector";
+import { ChedPriceMintDeposit } from "~~/components/MintChed";
 import { TwitterConnect } from "~~/components/TwitterConnect";
 import { Address } from "~~/components/scaffold-eth";
 import { backendGetEnd, backendSet } from "~~/utils/schedlBackendApi";
@@ -30,6 +31,7 @@ interface Booking {
 export const Me: React.FC = () => {
   const { jwt } = useJwtContext();
   const [profile, setProfile] = useState<Profile | null>(null);
+  const [tokensDeposited, setTokensDeposited] = useState<number>(0);
   const [bookingsToMe, setBookingsToMe] = useState<Booking[]>([]);
   const [bookingsFromMe, setBookingsFromMe] = useState<Booking[]>([]);
   const tabs = ["verify", "profile", "schedule"];
@@ -59,7 +61,12 @@ export const Me: React.FC = () => {
     if (jwt) {
       backendGetEnd(jwt, "/users/me", data => {
         setProfile(data);
+
+        backendGetEnd(jwt, "/token-payment/balance/" + data.idAddress, data => {
+          setTokensDeposited(data.balance);
+        });
       });
+
       backendGetEnd(jwt, "/bookings/me/to", data => {
         setBookingsToMe(data);
       });
@@ -142,6 +149,13 @@ export const Me: React.FC = () => {
                   {profile.idAddressIsPublic}
                   Set Public
                 </p>
+              </td>
+            </tr>
+            <tr>
+              <td className="p-2 border">CHED Deposited</td>
+              <td className="p-2 border">{tokensDeposited}</td>
+              <td className="p-2 border">
+                <ChedPriceMintDeposit />
               </td>
             </tr>
           </tbody>
