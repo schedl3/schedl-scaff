@@ -20,6 +20,7 @@ const UserProfile: React.FC<{ username: string | undefined }> = ({ username }) =
   const { jwt } = useJwtContext();
   const account = useAccount();
   const [user, setUser] = useState<PartialUser | undefined>(undefined);
+  const [tokensDeposited, setTokensDeposited] = useState<number>(0);
   const [avail, setAvail] = useState<any>(undefined);
   const [loadingU, setLoadingU] = useState(true);
   const [loadingA, setLoadingA] = useState(true);
@@ -37,6 +38,15 @@ const UserProfile: React.FC<{ username: string | undefined }> = ({ username }) =
           const user: PartialUser = data;
           setUser(user);
           setLoadingU(false);
+
+          backendGetEnd(
+            false,
+            "/token-payment/deposited-tokens/?" +
+              (data.username ? "username=" + data.username : "address=" + data.idAddress),
+            data => {
+              setTokensDeposited(data.depositedTokens);
+            },
+          );
         });
       } catch (error) {
         console.error("Error fetching user profile:", error);
@@ -122,7 +132,9 @@ const UserProfile: React.FC<{ username: string | undefined }> = ({ username }) =
   return (
     <div>
       <div className="flex flex-col justify-center items-center p-0 bg-gradient-to-b from-yellow-400 to-white">
-        <p className="text-3xl font-bold">{user.username}</p>
+        <p className="text-3xl font-bold">
+          {user.username} {tokensDeposited >= 1 ? "(Pro)" : "(not pro)"}
+        </p>
         {user.ethereumAddress ? <p className="text-3xl">{user.ethereumAddress}</p> : null}
         {user.twitterUsername ? <p className="text-3xl">X: @{user.twitterUsername}</p> : null}
       </div>
@@ -145,6 +157,16 @@ const UserProfile: React.FC<{ username: string | undefined }> = ({ username }) =
         </div>
         <div className="bg-lime-300 px-4 py-4 col-span-1 mx-4 md:col-span-1">
           <div className="bg-white p-4 rounded-md border border-gray-300">
+            <div
+              className="bg-yellow-100 border border-yellow-300 text-yellow-800 px-2 py-0 mb-2 rounded relative"
+              role="alert"
+            >
+              {tokensDeposited >= 1 ? (
+                <p className="font-semibold">Anyone can book with a pro user.</p>
+              ) : (
+                <p className="font-semibold">Only a pro user can book with a non-pro user.</p>
+              )}
+            </div>
             <h2 className="text-lg font-semibold mb-2">Booking Request</h2>
 
             <div className="flex items-center">

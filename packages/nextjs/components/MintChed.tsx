@@ -12,7 +12,6 @@ export const ChedPriceMintDeposit = () => {
 };
 
 const MintDeposit = ({ currentMintPrice }: any) => {
-  console.log(formatEther(currentMintPrice as bigint));
   const { writeAsync, isLoading } = useScaffoldContractWrite({
     contractName: "SchedlToken",
     functionName: "mintAndDeposit",

@@ -62,9 +62,14 @@ export const Me: React.FC = () => {
       backendGetEnd(jwt, "/users/me", data => {
         setProfile(data);
 
-        backendGetEnd(jwt, "/token-payment/balance/" + data.idAddress, data => {
-          setTokensDeposited(data.balance);
-        });
+        backendGetEnd(
+          jwt,
+          "/token-payment/deposited-tokens/?" +
+            (data.username ? "username=" + data.username : "address=" + data.idAddress),
+          data => {
+            setTokensDeposited(data.depositedTokens);
+          },
+        );
       });
 
       backendGetEnd(jwt, "/bookings/me/to", data => {
@@ -84,7 +89,9 @@ export const Me: React.FC = () => {
       {/* <UserProfileHead /> */}
 
       <div className="flex flex-col justify-center items-center p-0 bg-gradient-to-b from-yellow-400 to-white">
-        <p className="text-3xl font-bold">{profile.username}</p>
+        <p className="text-3xl font-bold">
+          {profile.username} {tokensDeposited >= 1 ? "(Pro)" : "(not pro)"}
+        </p>
         <p className="text-3xl">{profile.idAddress}</p>
       </div>
 
