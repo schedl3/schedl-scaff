@@ -61,6 +61,17 @@ export const Me: React.FC = () => {
   useEffect(() => {
     if (jwt) {
       backendGetEnd(jwt, "/users/me", data => {
+        data.tz = data.tz ? data.tz : Intl.DateTimeFormat().resolvedOptions().timeZone;
+        data.schedule = data.schedule
+          ? data.schedule
+          : { Sun: "", Mon: "", Tue: "", Wed: "", Thu: "", Fri: "", Sat: "" };
+        data.username = data.username ? data.username : "";
+        data.idAddressIsPublic = data.idAddressIsPublic ? data.idAddressIsPublic : false;
+        data.assistantXmtpAddress = data.assistantXmtpAddress ? data.assistantXmtpAddress : "";
+        data.ethereumAddress = data.ethereumAddress ? data.ethereumAddress : "";
+        data.twitterUsername = data.twitterUsername ? data.twitterUsername : "";
+        data.bio = data.bio ? data.bio : "";
+
         setProfile(data);
 
         backendGetEnd(
