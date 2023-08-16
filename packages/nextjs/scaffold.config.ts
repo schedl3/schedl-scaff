@@ -11,7 +11,8 @@ export type ScaffoldConfig = {
 
 const scaffoldConfig = {
   // The network where your DApp lives in
-  targetNetwork: chains.hardhat,
+  targetNetwork: chains.polygonMumbai,
+  // targetNetwork: chains.hardhat,
   // targetNetwork: chains.goerli,
 
   // The interval at which your front-end polls the RPC servers for new data
