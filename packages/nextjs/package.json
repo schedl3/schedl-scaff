@@ -6,6 +6,7 @@
     "dev": "next dev -p 3131 | npx local-ssl-proxy --source 3130 --target 3131",
     "start": "next dev",
     "build": "next build",
+    "export": "next export",
     "serve": "next start",
     "lint": "next lint",
     "format": "prettier --write . '!(node_modules|.next|contracts)/**/*'",
