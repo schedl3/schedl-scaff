@@ -92,6 +92,16 @@ module.exports = {
     extend: {
       fontFamily: {
         "bai-jamjuree": ["Bai Jamjuree", "sans-serif"],
+        "open-sans": ["Open Sans", "sans-serif"],
+        "ibm-plex-mono": ["IBM Plex Mono", "mono"],
+        "lato": ["Lato", "sans-serif"],
+        "playfair": ["Playfair Display", "serif"],
+        "rubik": ["Rubik", "serif"],
+      },
+      backgroundColor: {
+        'custom-yellow': '#F6FA70',
+        'custom-teal': '#00DFA2',
+        'custom-red': '#FF0060',
       },
       keyframes: {
         grow: {

@@ -65,20 +65,16 @@ export function TimeSlotList({ ranges, slotMinutes, handleBookSlot }: TimeSlotLi
   };
 
   if (!ranges || ranges.length === 0) {
-    return null;
+    return <div className="bg-custom-teal border p-4 m-0 rounded">Pick a date from the calendar on the left.</div>;
   }
   const allTimeSlots: Date24H[] = ranges.flatMap(generateTimeSlots);
   const slotClass =
-    "p-4 m-2 bg-white border border-gray-300 rounded-sm hover:bg-gray-100 hover:shadow-md transition duration-300";
+    "p-4 py-2 m-2 bg-white border border-gray-300 rounded-sm hover:bg-gray-100 hover:shadow-md transition duration-300 font-ibm-plex-mono";
   return (
-    <div className="time-slot-list">
+    <div className="">
+      <p className="font-bold">Pick Time</p>
       {allTimeSlots.map((slot, index) => (
-        <div
-          // className={`${slotClass} time-slot-hour ${selectedSlot === index ? "selected" : ""}`}
-          className={`${slotClass} time-slot-hour `}
-          key={index}
-          onClick={() => handleBookSlot(allTimeSlots[index])}
-        >
+        <div className={slotClass} key={index} onClick={() => handleBookSlot(allTimeSlots[index])}>
           {fmtEpochDate24H(slot)}
         </div>
       ))}
