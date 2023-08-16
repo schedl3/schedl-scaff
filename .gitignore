@@ -12,4 +12,4 @@ node_modules
 .vscode/**
 .DS_Store
 
-packages/nextjs/generated/deployedContracts.ts
+# packages/nextjs/generated/deployedContracts.ts
