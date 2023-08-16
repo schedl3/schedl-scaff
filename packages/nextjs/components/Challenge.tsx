@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useAccount, useSignMessage } from "wagmi";
 import { useJwtContext } from "~~/contexts/JwtContext";
-import { backendGetChallenge, backendSiwe } from "~~/utils/schedlBackendApi";
+import { BACKEND_URL, backendGetChallenge, backendSiwe } from "~~/utils/schedlBackendApi";
 
 export const Challenge = () => {
   const [_challenge, setChallenge] = useState(""); // eslint-disable-line @typescript-eslint/no-unused-vars
@@ -43,8 +43,10 @@ export const Challenge = () => {
       }
       const response = await backendGetChallenge();
       const { nonce } = response.data; // TODO verify nonce
-      const URI = "https://localhost:3000"; // XXX not web domain
-      const domain = "localhost:3000"; // XXX not window.location.host
+      // const URI = "https://localhost:3000"; // XXX not web domain
+      const URI = BACKEND_URL(); // window.location.origin;
+      // const domain = "localhost:3000"; // XXX not window.location.host
+      const domain = new URL(URI).host; //window.location.host;
       setChallenge(nonce);
       const template = (domain: string, nonce: string, address: string | undefined, date: string) =>
         `${domain} wants you to sign in with your Ethereum account:\n` +
