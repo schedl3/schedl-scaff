@@ -122,7 +122,15 @@ export const Me: React.FC = () => {
   };
 
   if (!profile) {
-    return <div>Loading...</div>;
+    return (
+      <div>
+        <div className="flex flex-col justify-center items-center p-10 bg-gradient-to-b from-yellow-200 to-white">
+          <p className="text-3xl font-bold m-10 font-lato">An open-source privacy-preserving scheduler for anons</p>
+          <p className="text-3xl font-bold m-10 font-lato">How would you arrange a meeting with Satoshi?</p>
+          <p className="text-3xl font-bold m-10 font-lato">The pseudonymous economy needs pseudonymous tools.</p>
+        </div>
+      </div>
+    );
   }
   return (
     <div>
