@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import Image from "next/image";
 import { useJwtContext } from "../contexts/JwtContext";
 import { Schedule, ScheduleWeek } from "./ScheduleWeek";
 import { TzSelector } from "./TzSelector";
@@ -139,9 +140,11 @@ export const Me: React.FC = () => {
         ) : null}
         {profile.twitterUsername ? (
           <p className="text-3xl font-bold m-0 font-lato">
-            <img
+            <Image
               src="https://about.twitter.com/content/dam/about-twitter/x/brand-toolkit/logo-black.png.twimg.1920.png"
               alt="Twitter Logo"
+              width="27"
+              height="27"
               className="h-6 mb-1 mr-2 inline-block"
             />
             @{profile.twitterUsername} {chkmrk}
@@ -235,7 +238,7 @@ export const Me: React.FC = () => {
         <h2 className="text-2xl font-bold mb-4">Profile Information</h2>
         <ProfileField label="Username" value={profile.username} propName="username" onSave={handleFieldSave} />
         <ProfileField
-          label="XMTP Address"
+          label="XMTP Address (registered on production net, should not be your main Ethereum)"
           value={profile.assistantXmtpAddress}
           propName="assistantXmtpAddress"
           onSave={handleFieldSave}

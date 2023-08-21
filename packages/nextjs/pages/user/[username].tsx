@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import Image from "next/image";
 import { useRouter } from "next/router";
 import { DateTime } from "luxon";
 import type { NextPage } from "next";
@@ -163,9 +164,11 @@ const UserProfile: React.FC<{ username: string | undefined }> = ({ username }) =
         ) : null}
         {user.twitterUsername ? (
           <p className="text-3xl font-bold m-0 font-lato">
-            <img
+            <Image
               src="https://about.twitter.com/content/dam/about-twitter/x/brand-toolkit/logo-black.png.twimg.1920.png"
               alt="Twitter Logo"
+              width="27"
+              height="27"
               className="h-6 mb-1 mr-2 inline-block"
             />
             @{user.twitterUsername} {chkmrk}
