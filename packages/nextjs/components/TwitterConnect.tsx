@@ -1,4 +1,5 @@
 import React from "react";
+import { BACKEND_URL } from "~~/utils/schedlBackendApi";
 
 export const TwitterConnect: React.FC = () => {
   const handleSignInWithTwitter = () => {
@@ -7,7 +8,7 @@ export const TwitterConnect: React.FC = () => {
     const left = window.screen.width / 2 - width / 2;
     const top = window.screen.height / 2 - height / 2;
     const options = `width=${width},height=${height},top=${top},left=${left}`;
-    window.open("https://localhost:3000/auth/twitter", "_blank", options);
+    window.open(BACKEND_URL() + "/auth/twitter", "_blank", options);
   };
 
   return (
