@@ -11,7 +11,8 @@ export type ScaffoldConfig = {
 
 const scaffoldConfig = {
   // The network where your DApp lives in
-  targetNetwork: chains.polygonMumbai,
+  targetNetwork: chains.lineaTestnet, // "Linea Goerli Testnet"
+  // targetNetwork: chains.polygonMumbai,
   // targetNetwork: chains.hardhat,
   // targetNetwork: chains.goerli,
 
