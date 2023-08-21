@@ -2,7 +2,7 @@
 
 This is the frontend repo containing the NextJS app and smart contracts. Find the main project repo here: https://github.com/schedl3/schedl-backend
 
-⚙️ Built using NextJS, RainbowKit, Hardhat, Wagmi, and Typescript.
+⚙️ Built using Linea, Infura, NextJS, RainbowKit, Hardhat, Wagmi, and Typescript.
 
 ## Requirements
 
